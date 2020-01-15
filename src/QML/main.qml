@@ -5,20 +5,46 @@ import QtQuick.Layouts 1.0
 import QtQuick.Window 2.13
 import Qt.labs.platform 1.0
 
+import skydev.nantia 1.0
+
 ApplicationWindow {
     visible: true
     width: 800
     height: 600
-    title: qsTr("Nantia")
+    title: document.fileName + " - Nantia"
 
     Component.onCompleted: {
         x = Screen.width / 2 - width / 2
+
         y = Screen.height / 2 - height / 2
     }
 
     Shortcut {
         sequence: StandardKey.Open
         onActivated: openDialog.open()
+    }
+
+    MenuBar {
+        Menu {
+            title: qsTr("&File")
+
+            MenuItem {
+                text: qsTr("&Open")
+                onTriggered: openDialog.open()
+            }
+            MenuItem {
+                text: qsTr("&Quit")
+                onTriggered: Qt.quit()
+            }
+        }
+
+        Menu {
+            title: qsTr("&Help")
+
+            MenuItem {
+                text: qsTr("&About")
+            }
+        }
     }
 
     header : ToolBar {
@@ -47,7 +73,7 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent
             Label {
-                text: "Importing file ..."
+                text: qsTr("Importing file ...")
                 Layout.alignment: Qt.AlignLeft
             }
             ProgressBar {
@@ -62,10 +88,20 @@ ApplicationWindow {
         anchors.fill: parent
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        TextArea {
+        TextEdit {
+            id: textArea
+            leftPadding: 10
+            topPadding: 5
+            bottomPadding: 5
             anchors.fill: parent
-            background: null
-            text: "TextArea\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n"
+            font.pointSize: 10
+        }
+    }
+
+    TextHandler {
+        id: document
+        onLoaded: {
+            textArea.text = text
         }
     }
 
@@ -76,10 +112,7 @@ ApplicationWindow {
         nameFilters: ["Text files (*.txt)"]
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
         onAccepted: {
-            // TODO
+            document.load(file)
         }
     }
-
-
-
 }

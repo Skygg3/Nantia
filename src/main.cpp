@@ -1,6 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include "TextHandler.h"
+
 int main(int argc, char *argv[])
 {
     QGuiApplication::setApplicationName("Nantia");
@@ -8,6 +10,8 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+
+    qmlRegisterType<TextHandler>("skydev.nantia", 1, 0, "TextHandler");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl("qrc:/QML/main.qml"));
