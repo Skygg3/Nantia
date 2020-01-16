@@ -3,5 +3,8 @@
         <file>QML/main.qml</file>
         <file>resources/icons/open-file.svg</file>
         <file>qtquickcontrols2.conf</file>
+        <file>QML/AboutDialog.qml</file>
+        <file>resources/images/about_img.png</file>
+        <file>resources/icons/GitHub.png</file>
     </qresource>
 </RCC>

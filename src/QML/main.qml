@@ -43,8 +43,16 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("&About")
+                onTriggered: {
+                    aboutDialog.open()
+                }
             }
         }
+    }
+
+    AboutDialog {
+        id: aboutDialog
+        anchors.centerIn: parent
     }
 
     header : ToolBar {
