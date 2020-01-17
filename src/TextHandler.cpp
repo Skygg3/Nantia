@@ -5,7 +5,12 @@
 #include <QTextDocument>
 #include <QFileInfo>
 
-TextHandler::TextHandler()
+#include "TextReader.h"
+
+#include <QThread>
+
+TextHandler::TextHandler() :
+    reader(nullptr)
 {
 
 }
@@ -22,20 +27,31 @@ QString TextHandler::fileName() const
 void TextHandler::load(const QUrl &fileUrl)
 {
     if (fileUrl == m_fileUrl) return;
-
-    QString filePath = fileUrl.toLocalFile();
-
-    if (QFile::exists(filePath))
-    {
-        QFile file(filePath);
-        if (file.open(QIODevice::Text | QIODevice::ReadOnly))
-        {
-            QString content = QString::fromUtf8(file.readAll());
-
-            emit loaded(content);
-        }
-    }
-
     m_fileUrl = fileUrl;
-    emit fileUrlChanged();
+
+    QThread *thread = new QThread();
+    reader = new TextReader(fileUrl.toLocalFile());
+    reader->moveToThread(thread);
+
+    connect(thread, &QThread::started, reader, &TextReader::process);
+
+    connect(reader, &TextReader::progress, this, &TextHandler::threadProgressHandler);
+
+    connect(thread, &QThread::finished, this, &TextHandler::threadFinishedHandler);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect(reader, &TextReader::finished, thread, &QThread::quit);
+    connect(reader, &TextReader::finished, reader, &TextReader::deleteLater);
+
+    emit threadStarted();
+    thread->start();
+}
+
+void TextHandler::threadProgressHandler(int progress, const QString &line)
+{
+    emit threadProgress(progress / 100.0, line);
+}
+
+void TextHandler::threadFinishedHandler()
+{
+    emit threadFinished();
 }

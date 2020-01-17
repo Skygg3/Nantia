@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         TextHandler.cpp \
+        TextReader.cpp \
         main.cpp
 
 RESOURCES += \
@@ -34,6 +35,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    TextHandler.h
+    TextHandler.h \
+    TextReader.h
 
 RC_ICONS = $$PWD/resources/icons/logo.ico

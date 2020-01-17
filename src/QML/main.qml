@@ -81,12 +81,21 @@ ApplicationWindow {
         RowLayout {
             anchors.fill: parent
             Label {
-                text: qsTr("Importing file ...")
+                id: statusBarLabel
+                visible: false
                 Layout.alignment: Qt.AlignLeft
+                text: qsTr("Importing file ...")
+            }
+            Label {
+                id: progressLabel
+                visible: false
+                anchors.right: progressBar.left
+                rightPadding: 10
             }
             ProgressBar {
+                id: progressBar
+                visible: false
                 Layout.alignment: Qt.AlignRight
-                value: 0.5
             }
         }
     }
@@ -108,9 +117,24 @@ ApplicationWindow {
 
     TextHandler {
         id: document
-        onLoaded: {
-            textArea.text = text
+        onThreadStarted: {
+            statusBarLabel.visible = true;
+            progressLabel.visible = true;
+            progressBar.visible = true;
+            textArea.clear();
         }
+        onThreadProgress: {
+            var progressPercent = Math.round(progress * 100);
+            progressLabel.text = progressPercent.toString() + '%'
+            progressBar.value = progress;
+            textArea.text += line;
+        }
+        onThreadFinished: {
+            statusBarLabel.visible = false;
+            progressLabel.visible = false;
+            progressBar.visible = false;
+        }
+
     }
 
     FileDialog {
