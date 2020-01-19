@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 600
-    title: document.fileName + " - Nantia"
+    title: textHandler.fileName + " - Nantia"
 
     Component.onCompleted: {
         x = Screen.width / 2 - width / 2
@@ -35,6 +35,15 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("&Quit")
                 onTriggered: Qt.quit()
+            }
+        }
+
+        Menu {
+            title: qsTr("&View")
+
+            MenuItem {
+                text: qsTr("Switch &Theme")
+                onTriggered: openDialog.open()
             }
         }
 
@@ -72,69 +81,95 @@ ApplicationWindow {
                     icon.height: 20
                     onClicked: openDialog.open()
                 }
+                ToolButton {
+                    id: changeThemeButton
+                    icon.source: "qrc:/resources/icons/change-theme.png"
+                    icon.width: 30
+                    icon.height: 30
+                }
             }
         }
     }
 
-    footer : StatusBar {
-        id: statusBar
-        RowLayout {
-            anchors.fill: parent
-            Label {
-                id: statusBarLabel
-                visible: false
-                Layout.alignment: Qt.AlignLeft
-                text: qsTr("Importing file ...")
-            }
-            Label {
-                id: progressLabel
-                visible: false
-                anchors.right: progressBar.left
-                rightPadding: 10
-            }
-            ProgressBar {
-                id: progressBar
-                visible: false
-                Layout.alignment: Qt.AlignRight
-            }
-        }
-    }
-
-    ScrollView {
-        id: view
+    MouseArea {
         anchors.fill: parent
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        onWheel: {
+            var nbElement = textViewer.maxLine - textViewer.minLine + 1;
+            if (wheel.angleDelta.y > 0)
+            {
+                textViewer.minLine = Math.max(1, textViewer.minLine - textViewer.incrementStep);
+                textViewer.maxLine = textViewer.minLine + nbElement;
+            }
+            else
+            {
+                textViewer.minLine = Math.max(1, textViewer.minLine + textViewer.incrementStep);
+                textViewer.maxLine = textViewer.minLine + nbElement;
+            }
+        }
 
-        TextEdit {
-            id: textArea
-            leftPadding: 10
-            topPadding: 5
-            bottomPadding: 5
-            anchors.fill: parent
-            font.pointSize: 10
+        TextViewer {
+            id: textViewer
+            minLine: 5
+            maxLine: minLine + parent.height / 30
         }
     }
 
-    TextHandler {
-        id: document
-        onThreadStarted: {
+    Connections
+    {
+        target: textHandler
+        onThreadStarted:
+        {
             statusBarLabel.visible = true;
             progressLabel.visible = true;
             progressBar.visible = true;
-            textArea.clear();
+            progressLabel.text = "0%";
+            progressBar.value = 0;
+            var nbElement = textViewer.maxLine - textViewer.minLine + 1;
+            textViewer.minLine = 1;
+            textViewer.maxLine = textViewer.minLine + nbElement;
         }
         onThreadProgress: {
             var progressPercent = Math.round(progress * 100);
             progressLabel.text = progressPercent.toString() + '%'
             progressBar.value = progress;
-            textArea.text += line;
+            textViewer.minLine += 1;
+            textViewer.minLine -= 1;
         }
         onThreadFinished: {
             statusBarLabel.visible = false;
             progressLabel.visible = false;
             progressBar.visible = false;
         }
+    }
 
+    footer : StatusBar {
+        id: statusBar
+        RowLayout {
+            width: parent.width
+            Label {
+                id: statusBarLabel
+                visible: false
+                Layout.alignment: Qt.AlignLeft
+                text: qsTr("Importing file ...")
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            Label {
+                id: progressLabel
+                visible: false
+                Layout.alignment: Qt.AlignRight
+                rightPadding: 10
+            }
+            ProgressBar {
+                id: progressBar
+                rightPadding: 10
+                visible: false
+                Layout.alignment: Qt.AlignRight
+            }
+        }
     }
 
     FileDialog {
@@ -144,7 +179,7 @@ ApplicationWindow {
         nameFilters: ["Text files (*.txt)"]
         folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
         onAccepted: {
-            document.load(file)
+            textHandler.load(file)
         }
     }
 }

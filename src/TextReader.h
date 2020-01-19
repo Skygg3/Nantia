@@ -11,13 +11,12 @@ public:
 
 public slots:
     void process();
-    QString getFileContent() const { return fileContent; }
 
 signals:
-    void progress(int progress, const QString &line);
+    void progress(uint progress);
+    void newLine(const QByteArray &line);
     void finished();
 
 private:
     QString name;
-    QString fileContent;
 };

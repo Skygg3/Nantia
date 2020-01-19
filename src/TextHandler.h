@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <QObject>
 #include <QUrl>
 
@@ -12,13 +14,16 @@ class TextHandler : public QObject
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileUrlChanged)
 
 public:
+    Q_INVOKABLE QString getLine(int lineNumber);
+
+public:
     TextHandler();
 
     QString fileName() const;
 
 signals:
     void threadStarted();
-    void threadProgress(double progress, const QString &line);
+    void threadProgress(double progress);
     void threadFinished();
     void loaded(const QString &text);
     void fileUrlChanged();
@@ -26,11 +31,14 @@ signals:
 public slots:
     void load(const QUrl &fileUrl);
 
-    void threadProgressHandler(int progress, const QString &line);
+    void newLine(const QByteArray &newLine);
+    void threadProgressHandler(int progress);
     void threadFinishedHandler();
 
 private:
     QUrl m_fileUrl;
     TextReader *reader;
+
+    std::vector<QByteArray> m_textData;
 };
 

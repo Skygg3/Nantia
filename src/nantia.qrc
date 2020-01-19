@@ -6,5 +6,7 @@
         <file>QML/AboutDialog.qml</file>
         <file>resources/images/about_img.png</file>
         <file>resources/icons/GitHub.png</file>
+        <file>resources/icons/change-theme.png</file>
+        <file>QML/TextViewer.qml</file>
     </qresource>
 </RCC>

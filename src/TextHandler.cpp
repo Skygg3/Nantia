@@ -8,11 +8,20 @@
 #include "TextReader.h"
 
 #include <QThread>
+#include <QDebug>
+
+QString TextHandler::getLine(int lineNumber)
+{
+    if (m_fileUrl.isEmpty()) return QString();
+
+    if (m_textData.size() < static_cast<size_t>(lineNumber)) return QString();
+
+    return QString(m_textData.at(static_cast<size_t>(lineNumber) - 1));
+}
 
 TextHandler::TextHandler() :
     reader(nullptr)
 {
-
 }
 
 QString TextHandler::fileName() const
@@ -28,30 +37,39 @@ void TextHandler::load(const QUrl &fileUrl)
 {
     if (fileUrl == m_fileUrl) return;
     m_fileUrl = fileUrl;
+    emit fileUrlChanged();
+    m_textData.clear();
 
-    QThread *thread = new QThread();
+    auto thread = new QThread();
     reader = new TextReader(fileUrl.toLocalFile());
     reader->moveToThread(thread);
 
     connect(thread, &QThread::started, reader, &TextReader::process);
 
+    connect(reader, &TextReader::newLine, this, &TextHandler::newLine);
     connect(reader, &TextReader::progress, this, &TextHandler::threadProgressHandler);
 
     connect(thread, &QThread::finished, this, &TextHandler::threadFinishedHandler);
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
     connect(reader, &TextReader::finished, thread, &QThread::quit);
-    connect(reader, &TextReader::finished, reader, &TextReader::deleteLater);
 
     emit threadStarted();
     thread->start();
 }
 
-void TextHandler::threadProgressHandler(int progress, const QString &line)
+void TextHandler::newLine(const QByteArray &newLine)
 {
-    emit threadProgress(progress / 100.0, line);
+    m_textData.push_back(newLine);
+}
+
+void TextHandler::threadProgressHandler(int progress)
+{
+    emit threadProgress(progress / 100.0);
 }
 
 void TextHandler::threadFinishedHandler()
 {
+    reader->deleteLater();
     emit threadFinished();
 }
+
