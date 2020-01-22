@@ -19,7 +19,13 @@ QString TextHandler::getLine(int lineNumber)
     return QString(m_textData.at(static_cast<size_t>(lineNumber) - 1));
 }
 
+int TextHandler::numberOfLine()
+{
+    return static_cast<int>(m_textData.size());
+}
+
 TextHandler::TextHandler() :
+    m_fileUrl(),
     reader(nullptr)
 {
 }
@@ -38,6 +44,7 @@ void TextHandler::load(const QUrl &fileUrl)
     if (fileUrl == m_fileUrl) return;
     m_fileUrl = fileUrl;
     emit fileUrlChanged();
+    emit hasFileChanged();
     m_textData.clear();
 
     auto thread = new QThread();

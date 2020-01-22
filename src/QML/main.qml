@@ -94,23 +94,20 @@ ApplicationWindow {
     MouseArea {
         anchors.fill: parent
         onWheel: {
-            var nbElement = textViewer.maxLine - textViewer.minLine + 1;
             if (wheel.angleDelta.y > 0)
             {
-                textViewer.minLine = Math.max(1, textViewer.minLine - textViewer.incrementStep);
-                textViewer.maxLine = textViewer.minLine + nbElement;
+                textViewer.currentLine = Math.max(textViewer.currentLine - textViewer.incrementStep, 1);
             }
             else
             {
-                textViewer.minLine = Math.max(1, textViewer.minLine + textViewer.incrementStep);
-                textViewer.maxLine = textViewer.minLine + nbElement;
+                textViewer.currentLine = Math.min(textViewer.currentLine + textViewer.incrementStep, textHandler.numberOfLine());
             }
+            textViewer.maxNumberLine = (textViewer.currentLine + parent.height / 30) > textHandler.numberOfLine() ? (textHandler.numberOfLine() - textViewer.currentLine) : parent.height / 30;
         }
 
         TextViewer {
             id: textViewer
-            minLine: 5
-            maxLine: minLine + parent.height / 30
+            maxNumberLine: Math.min(parent.height / 30, textHandler.numberOfLine())
         }
     }
 
@@ -124,16 +121,11 @@ ApplicationWindow {
             progressBar.visible = true;
             progressLabel.text = "0%";
             progressBar.value = 0;
-            var nbElement = textViewer.maxLine - textViewer.minLine + 1;
-            textViewer.minLine = 1;
-            textViewer.maxLine = textViewer.minLine + nbElement;
         }
         onThreadProgress: {
             var progressPercent = Math.round(progress * 100);
             progressLabel.text = progressPercent.toString() + '%'
             progressBar.value = progress;
-            textViewer.minLine += 1;
-            textViewer.minLine -= 1;
         }
         onThreadFinished: {
             statusBarLabel.visible = false;

@@ -5,9 +5,8 @@ import QtQuick.Controls 2.12
 import skydev.nantia 1.0
 
 Item {
-    property int minLine: 5
-    property int maxLine: 20
-
+    property int currentLine: 1
+    property int maxNumberLine: 0
     property int incrementStep: 5
 
     id: viewer
@@ -17,12 +16,12 @@ Item {
         ColumnLayout {
             spacing: 0
             Repeater {
-                model: Math.max(maxLine - minLine + 1, 0)
+                model: textHandler.hasFile ? Math.min(currentLine + maxNumberLine, textHandler.numberOfLine()) : 0
 
                 Rectangle {
                     color: "#e4e4e4"
                     Text {
-                        text: index + minLine
+                        text: index + currentLine
                         font.pointSize: 10
                         anchors.centerIn: parent
                     }
@@ -38,14 +37,14 @@ Item {
             spacing: 0
             width: 100
             Repeater {
-                model: Math.max(maxLine - minLine + 1, 0)
+                model: textHandler.hasFile ? Math.min(currentLine + maxNumberLine, textHandler.numberOfLine()) : 0
 
                 Rectangle {
                     color: "transparent"
                     Layout.fillWidth: true
                     Text {
                         text: {
-                            textHandler.getLine(index + minLine)
+                            textHandler.getLine(index + currentLine)
                         }
                         anchors.verticalCenter: parent.verticalCenter
                         font.pointSize: 10

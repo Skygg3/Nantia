@@ -12,14 +12,17 @@ class TextHandler : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileUrlChanged)
+    Q_PROPERTY(bool hasFile READ hasFile NOTIFY hasFileChanged)
 
 public:
     Q_INVOKABLE QString getLine(int lineNumber);
+    Q_INVOKABLE int numberOfLine();
 
 public:
     TextHandler();
 
     QString fileName() const;
+    bool hasFile() const { return !m_fileUrl.isEmpty(); }
 
 signals:
     void threadStarted();
@@ -27,6 +30,7 @@ signals:
     void threadFinished();
     void loaded(const QString &text);
     void fileUrlChanged();
+    void hasFileChanged();
 
 public slots:
     void load(const QUrl &fileUrl);
