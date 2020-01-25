@@ -8,5 +8,6 @@
         <file>resources/icons/GitHub.png</file>
         <file>resources/icons/change-theme.png</file>
         <file>QML/TextViewer.qml</file>
+        <file>resources/icons/stop.svg</file>
     </qresource>
 </RCC>

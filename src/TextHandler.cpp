@@ -25,6 +25,7 @@ int TextHandler::numberOfLine()
 }
 
 TextHandler::TextHandler() :
+    m_isImporting(false),
     m_fileUrl(),
     reader(nullptr)
 {
@@ -43,8 +44,10 @@ void TextHandler::load(const QUrl &fileUrl)
 {
     if (fileUrl == m_fileUrl) return;
     m_fileUrl = fileUrl;
+    m_isImporting = true;
     emit fileUrlChanged();
     emit hasFileChanged();
+    emit isImportingChanged();
     m_textData.clear();
 
     auto thread = new QThread();
@@ -77,6 +80,18 @@ void TextHandler::threadProgressHandler(int progress)
 void TextHandler::threadFinishedHandler()
 {
     reader->deleteLater();
+    m_isImporting = false;
+    emit isImportingChanged();
     emit threadFinished();
+}
+
+void TextHandler::stopThreadRequested()
+{
+    reader->stopProcess();
+}
+
+void TextHandler::exitApp()
+{
+
 }
 

@@ -76,10 +76,19 @@ ApplicationWindow {
                 id: fileRow
                 ToolButton {
                     id: openButton
+                    visible: !textHandler.isImporting
                     icon.source: "qrc:/resources/icons/open-file.svg"
                     icon.width: 20
                     icon.height: 20
                     onClicked: openDialog.open()
+                }
+                ToolButton {
+                    id: stopImportButton
+                    visible: textHandler.isImporting
+                    icon.source: "qrc:/resources/icons/stop.svg"
+                    icon.width: 30
+                    icon.height: 30
+                    onClicked: textHandler.stopThreadRequested()
                 }
                 ToolButton {
                     id: changeThemeButton
@@ -173,5 +182,9 @@ ApplicationWindow {
         onAccepted: {
             textHandler.load(file)
         }
+    }
+
+    onClosing: {
+        if (textHandler.isImporting) textHandler.stopThreadRequested()
     }
 }

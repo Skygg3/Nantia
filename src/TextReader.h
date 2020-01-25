@@ -8,6 +8,7 @@ class TextReader : public QObject
 
 public:
     explicit TextReader(const QString &name);
+    void stopProcess();
 
 public slots:
     void process();
@@ -19,4 +20,5 @@ signals:
 
 private:
     QString name;
+    bool stopRequested;
 };

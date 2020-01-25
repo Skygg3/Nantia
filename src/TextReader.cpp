@@ -4,12 +4,20 @@
 
 
 TextReader::TextReader(const QString &name) :
-    name(name)
+    name(name),
+    stopRequested(false)
 {
+}
+
+void TextReader::stopProcess()
+{
+    stopRequested = true;
 }
 
 void TextReader::process()
 {
+    stopRequested = false;
+
     if (QFile::exists(name))
     {
         QFile file(name);
@@ -19,7 +27,7 @@ void TextReader::process()
         {
             long long lastProgress = 0;
 
-            while(!file.atEnd()) {
+            while(!file.atEnd() && !stopRequested) {
                 emit newLine(file.readLine());
 
                 // Calculate new progress

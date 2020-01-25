@@ -13,6 +13,7 @@ class TextHandler : public QObject
 
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileUrlChanged)
     Q_PROPERTY(bool hasFile READ hasFile NOTIFY hasFileChanged)
+    Q_PROPERTY(bool isImporting READ isImporting NOTIFY isImportingChanged)
 
 public:
     Q_INVOKABLE QString getLine(int lineNumber);
@@ -23,6 +24,7 @@ public:
 
     QString fileName() const;
     bool hasFile() const { return !m_fileUrl.isEmpty(); }
+    bool isImporting() const { return m_isImporting; }
 
 signals:
     void threadStarted();
@@ -31,6 +33,7 @@ signals:
     void loaded(const QString &text);
     void fileUrlChanged();
     void hasFileChanged();
+    void isImportingChanged();
 
 public slots:
     void load(const QUrl &fileUrl);
@@ -39,7 +42,12 @@ public slots:
     void threadProgressHandler(int progress);
     void threadFinishedHandler();
 
+    void stopThreadRequested();
+
+    void exitApp();
+
 private:
+    bool m_isImporting;
     QUrl m_fileUrl;
     TextReader *reader;
 
