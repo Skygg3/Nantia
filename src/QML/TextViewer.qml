@@ -11,6 +11,17 @@ Item {
 
     id: viewer
 
+    function refresh() {
+        currentLine +=1;
+        currentLine -= 1;
+    }
+
+    function goToFirstLine() {
+        currentLine = 2;
+        currentLine = 1;
+        maxNumberLine = (currentLine + parent.height / 30) > textHandler.numberOfLine() ? (textHandler.numberOfLine() - currentLine) : parent.height / 30;
+    }
+
     RowLayout {
         id: rowLayout
         ColumnLayout {

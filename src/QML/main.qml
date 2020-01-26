@@ -135,11 +135,13 @@ ApplicationWindow {
             var progressPercent = Math.round(progress * 100);
             progressLabel.text = progressPercent.toString() + '%'
             progressBar.value = progress;
+            textViewer.refresh();
         }
         onThreadFinished: {
             statusBarLabel.visible = false;
             progressLabel.visible = false;
             progressBar.visible = false;
+            textViewer.goToFirstLine();
         }
     }
 
