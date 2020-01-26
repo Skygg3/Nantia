@@ -1,9 +1,11 @@
 import QtQuick 2.13
-import QtQuick.Controls 1.2
+import QtQuick.Controls 1.4
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.0
 import QtQuick.Window 2.13
 import Qt.labs.platform 1.0
+import QtQuick.Controls.Material 2.12
+import QtQuick.Controls.Styles 1.4
 
 import skydev.nantia 1.0
 
@@ -13,10 +15,32 @@ ApplicationWindow {
     height: 600
     title: textHandler.fileName + " - Nantia"
 
+    Material.theme: Material.Light
+    Material.primary: "White"
+    Material.foreground: "#444444"
+    Material.accent: "Blue"
+
+    property bool isDarkTheme: false
+
     Component.onCompleted: {
         x = Screen.width / 2 - width / 2
-
         y = Screen.height / 2 - height / 2
+    }
+
+    function changeTheme() {
+        if (isDarkTheme) {
+            Material.theme = Material.Light
+            Material.primary = "White"
+            Material.foreground = "#444444"
+            Material.accent = "Blue"
+            isDarkTheme = false;
+        } else {
+            Material.theme = Material.Dark
+            Material.primary = "Black"
+            Material.foreground = "#444444"
+            Material.accent = "Blue"
+            isDarkTheme = true;
+        }
     }
 
     Shortcut {
@@ -25,6 +49,7 @@ ApplicationWindow {
     }
 
     MenuBar {
+
         Menu {
             title: qsTr("&File")
 
@@ -43,7 +68,7 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Switch &Theme")
-                onTriggered: openDialog.open()
+                onTriggered: changeTheme()
             }
         }
 
@@ -95,6 +120,7 @@ ApplicationWindow {
                     icon.source: "qrc:/resources/icons/change-theme.png"
                     icon.width: 30
                     icon.height: 30
+                    onClicked: changeTheme()
                 }
             }
         }
@@ -117,6 +143,8 @@ ApplicationWindow {
         TextViewer {
             id: textViewer
             maxNumberLine: Math.min(parent.height / 30, textHandler.numberOfLine())
+
+            textColor: isDarkTheme ? "White" : "Black"
         }
     }
 

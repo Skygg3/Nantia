@@ -9,6 +9,8 @@ Item {
     property int maxNumberLine: 0
     property int incrementStep: 5
 
+    property string textColor: "Black"
+
     id: viewer
 
     function refresh() {
@@ -59,6 +61,7 @@ Item {
                         }
                         anchors.verticalCenter: parent.verticalCenter
                         font.pointSize: 10
+                        color: textColor
                     }
                     height: 30
                 }
