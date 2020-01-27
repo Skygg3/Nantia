@@ -87,6 +87,7 @@ ApplicationWindow {
     AboutDialog {
         id: aboutDialog
         anchors.centerIn: parent
+        mainColor: isDarkTheme ? "White" : "#444444"
     }
 
     header : ToolBar {
